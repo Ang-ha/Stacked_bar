@@ -1,37 +1,50 @@
-## Welcome to GitHub Pages
+---
+title: "Stacked_bar"
+output: html_document
+---
 
-You can use the [editor on GitHub](https://github.com/Ang-ha/Stacked_bar/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```{r install and load packages}
+library(ggplot2)
+library(reshape2)
+library(svglite)
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+```{r set working directory}
+setwd("C:/Users/Ang-ha/Google Drive/01.Work_Hohenheim/01.Projects/General aging/New_analysis/Graphs/Stacked_bar")
+```
 
-### Jekyll Themes
+```{r colors}
+Genus <- c("Allobaculum" = "darkseagreen",
+                                "Cutibacterium" = "darkolivegreen",
+                                "Duncaniella" = "darkgoldenrod1", 
+           "Helicobacter" = "chocolate3", "Lactobacillus" = "cornflowerblue", "Ligilactobacillus" = "navy", "Limosilactobacillus" = "burlywood", "Streptococcus" = "burlywood4", "f_Lachnospiraceae" = "darkred", "f_Muribaculaceae" = "seashell1", "Others" = "azure4", "Acinetobacter" = "skyblue4", "Corynebacterium" = "lightblue", "Muribacter" = "thistle3", "Pseudomonas" = "mediumpurple4", "f_Ruminococcaceae" = "indianred", "Prevotella" = "aquamarine2", "Alistipes" = "aquamarine4", "Brachyspira" = "darkslategray")
+```
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Ang-ha/Stacked_bar/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
 
-### Support or Contact
+```{r load the file }
+pc <- read.csv("Duodenum_csv.csv", header = TRUE, check.names = FALSE)
+```
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+```{r convert data frame from long to wide}
+pcm <- melt(pc, id = c("Genera"))
+```
+
+```{r keep the order of samples}
+pcm$Genera <- factor(pcm$Genera,levels=unique(pcm$Genera))
+```
+
+```{r make the plot}
+duodenum <- ggplot(pcm, aes(x = variable, fill = Genera, y = value)) + 
+  geom_bar(stat = "identity", colour = "black") +
+  theme(axis.text.x = element_text(size = 18, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+        axis.title.y = element_text(size = 16, face = "bold"), legend.title = element_text(size = 16, face = "bold"), 
+        legend.text = element_text(size = 12, face = "bold.italic", colour = "black"), 
+        axis.text.y = element_text(colour = "black", size = 12, face = "bold")) + 
+  scale_y_continuous(expand = c(0,0)) + 
+  labs(x = "Age (Months)", y = "Average Abundance (%)", fill = "Genus") +
+  scale_fill_manual(values = Genus)
+```
+
+```{r}
+duodenum
+```
